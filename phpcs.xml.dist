@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="unleashed-api-client">
+    <description>Coding standard for a2zwebltd/unleashed-api-client</description>
+    <file>src</file>
+    <file>tests</file>
+    <arg name="colors"/>
+    <arg value="p"/>
+    <rule ref="PSR12"/>
+</ruleset>

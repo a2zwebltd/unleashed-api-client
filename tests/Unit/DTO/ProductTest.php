@@ -17,7 +17,7 @@ class ProductTest extends TestCase
     public function testProductCreation(): void
     {
         $product = new Product();
-        
+
         $this->assertInstanceOf(Product::class, $product);
         $this->assertNull($product->getProductCode());
         $this->assertNull($product->getProductDescription());
@@ -32,14 +32,14 @@ class ProductTest extends TestCase
     public function testProductSettersAndGetters(): void
     {
         $product = new Product();
-        
+
         $product->setProductCode('TEST-001');
         $product->setProductDescription('Test Product');
         $product->setSellPrice(99.99);
         $product->setIsSellable(true);
         $product->setIsPurchasable(true);
         $product->setNotes('Test notes');
-        
+
         $this->assertEquals('TEST-001', $product->getProductCode());
         $this->assertEquals('Test Product', $product->getProductDescription());
         $this->assertEquals(99.99, $product->getSellPrice());
@@ -58,9 +58,9 @@ class ProductTest extends TestCase
         $product->setProductDescription('Test Product');
         $product->setSellPrice(99.99);
         $product->setIsSellable(true);
-        
+
         $array = $product->toArray();
-        
+
         $this->assertIsArray($array);
         $this->assertEquals('TEST-001', $array['ProductCode']);
         $this->assertEquals('Test Product', $array['ProductDescription']);
@@ -81,9 +81,9 @@ class ProductTest extends TestCase
             'IsPurchasable' => false,
             'Guid' => 'test-guid-123',
         ];
-        
+
         $product = Product::fromArray($data);
-        
+
         $this->assertEquals('TEST-001', $product->getProductCode());
         $this->assertEquals('Test Product', $product->getProductDescription());
         $this->assertEquals(99.99, $product->getSellPrice());
@@ -101,10 +101,10 @@ class ProductTest extends TestCase
         $product->setProductCode('TEST-001');
         $product->setProductDescription('Test Product');
         $product->setSellPrice(99.99);
-        
+
         $json = json_encode($product);
         $decoded = json_decode($json, true);
-        
+
         $this->assertIsArray($decoded);
         $this->assertEquals('TEST-001', $decoded['ProductCode']);
         $this->assertEquals('Test Product', $decoded['ProductDescription']);
@@ -117,7 +117,7 @@ class ProductTest extends TestCase
     public function testProductWithAllFields(): void
     {
         $product = new Product();
-        
+
         // Set all available fields
         $product->setProductCode('COMPLETE-001');
         $product->setProductDescription('Complete Product');
@@ -158,9 +158,9 @@ class ProductTest extends TestCase
         $product->setCustomsDescription('Electronic device');
         $product->setIccCountryCode('US');
         $product->setIccCountryName('United States');
-        
+
         $array = $product->toArray();
-        
+
         // Verify all fields are present
         $this->assertEquals('COMPLETE-001', $array['ProductCode']);
         $this->assertEquals('Complete Product', $array['ProductDescription']);
@@ -211,14 +211,14 @@ class ProductTest extends TestCase
     public function testProductSettersReturnVoid(): void
     {
         $product = new Product();
-        
+
         // Test that setters return void (not $this)
         $result = $product->setProductCode('TEST-001');
         $this->assertNull($result);
-        
+
         $result = $product->setProductDescription('Test Product');
         $this->assertNull($result);
-        
+
         $result = $product->setSellPrice(99.99);
         $this->assertNull($result);
     }
@@ -230,12 +230,12 @@ class ProductTest extends TestCase
     public function testProductNullValues(): void
     {
         $product = new Product();
-        
+
         // Test that null values are handled correctly
         $product->setProductCode(null);
         $product->setProductDescription(null);
         $product->setSellPrice(null);
-        
+
         $this->assertNull($product->getProductCode());
         $this->assertNull($product->getProductDescription());
         $this->assertNull($product->getSellPrice());
@@ -247,7 +247,7 @@ class ProductTest extends TestCase
     public function testProductBooleanFields(): void
     {
         $product = new Product();
-        
+
         // Test boolean fields
         $product->setIsSellable(true);
         $product->setIsPurchasable(false);
@@ -260,7 +260,7 @@ class ProductTest extends TestCase
         $product->setTaxableSales(true);
         $product->setCopyCommentsForSales(false);
         $product->setCopyCommentsForPurchases(true);
-        
+
         $this->assertTrue($product->getIsSellable());
         $this->assertFalse($product->getIsPurchasable());
         $this->assertTrue($product->getIsAssembledProduct());

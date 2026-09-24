@@ -17,9 +17,9 @@ class UnleashedApiTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mockClient = $this->createMock(UnleashedClient::class);
+        $this->mockClient = $this->createStub(UnleashedClient::class);
         $this->api = new UnleashedApi('test-api-id', 'test-api-key', 'test-client/1.0');
-        
+
         // Use reflection to inject the mock client
         $reflection = new \ReflectionClass($this->api);
         $clientProperty = $reflection->getProperty('client');
@@ -33,7 +33,7 @@ class UnleashedApiTest extends TestCase
     public function testConstructor(): void
     {
         $api = new UnleashedApi('api-id', 'api-key', 'client/1.0');
-        
+
         $this->assertInstanceOf(UnleashedApi::class, $api);
     }
 
@@ -43,7 +43,7 @@ class UnleashedApiTest extends TestCase
     public function testConstructorWithCustomBaseUrl(): void
     {
         $api = new UnleashedApi('api-id', 'api-key', 'client/1.0', 'https://api-test.unleashedsoftware.com');
-        
+
         $this->assertInstanceOf(UnleashedApi::class, $api);
     }
 
@@ -53,7 +53,7 @@ class UnleashedApiTest extends TestCase
     public function testGetClient(): void
     {
         $client = $this->api->getClient();
-        
+
         $this->assertInstanceOf(UnleashedClient::class, $client);
         $this->assertSame($this->mockClient, $client);
     }
@@ -66,7 +66,7 @@ class UnleashedApiTest extends TestCase
         // Test accessing a service that should exist
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown service: nonExistentService');
-        
+
         $this->api->nonExistentService;
     }
 
@@ -79,7 +79,7 @@ class UnleashedApiTest extends TestCase
         $reflection = new \ReflectionClass($this->api);
         $serviceMapProperty = $reflection->getProperty('serviceMap');
         $serviceMapProperty->setAccessible(true);
-        
+
         // Initially should be empty
         $serviceMap = $serviceMapProperty->getValue($this->api);
         $this->assertIsArray($serviceMap);
@@ -95,7 +95,7 @@ class UnleashedApiTest extends TestCase
         $reflection = new \ReflectionClass($this->api);
         $servicesProperty = $reflection->getProperty('services');
         $servicesProperty->setAccessible(true);
-        
+
         // Initially should be empty
         $services = $servicesProperty->getValue($this->api);
         $this->assertIsArray($services);
@@ -111,7 +111,7 @@ class UnleashedApiTest extends TestCase
         // This test verifies that the service map is loaded when accessing a service
         // We can't easily test the actual service loading without mocking the file system
         // but we can test that the method exists and is callable
-        
+
         $reflection = new \ReflectionClass($this->api);
         $this->assertTrue($reflection->hasMethod('__get'));
         $this->assertTrue($reflection->hasMethod('loadServiceMap'));
@@ -127,14 +127,14 @@ class UnleashedApiTest extends TestCase
         $reflection = new \ReflectionClass($this->api);
         $loadServiceMapMethod = $reflection->getMethod('loadServiceMap');
         $loadServiceMapMethod->setAccessible(true);
-        
+
         // This should not throw an exception
         $loadServiceMapMethod->invoke($this->api);
-        
+
         $serviceMapProperty = $reflection->getProperty('serviceMap');
         $serviceMapProperty->setAccessible(true);
         $serviceMap = $serviceMapProperty->getValue($this->api);
-        
+
         $this->assertIsArray($serviceMap);
     }
 
@@ -145,7 +145,7 @@ class UnleashedApiTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown service: invalidService');
-        
+
         $this->api->invalidService;
     }
 
@@ -159,10 +159,10 @@ class UnleashedApiTest extends TestCase
         $reflection = new \ReflectionClass($this->api);
         $getServiceMethod = $reflection->getMethod('getService');
         $getServiceMethod->setAccessible(true);
-        
+
         // Mock a service class that doesn't exist
         $mockServiceClass = 'Unleashed\\ApiClient\\Services\\NonExistentService';
-        
+
         // This will test the service instantiation logic
         // We expect it to fail because the service class doesn't exist
         $this->expectException(\Error::class);

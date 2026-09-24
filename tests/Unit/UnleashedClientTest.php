@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Unleashed\ApiClient\Client\UnleashedClient;
 use Unleashed\ApiClient\Exceptions\ApiException;
@@ -28,31 +29,33 @@ class UnleashedClientTest extends TestCase
             'test-api-key',
             'test-client/1.0'
         );
-        
+
         // Use reflection to inject the mock client
         $reflection = new \ReflectionClass($this->client);
         $httpClientProperty = $reflection->getProperty('httpClient');
         $httpClientProperty->setValue($this->client, $this->mockHttpClient);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testConstructor(): void
     {
         $client = new UnleashedClient('api-id', 'api-key', 'client/1.0');
-        
+
         $this->assertEquals('https://api.unleashedsoftware.com', $client->getBaseUrl());
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testConstructorWithCustomBaseUrl(): void
     {
         $client = new UnleashedClient('api-id', 'api-key', 'client/1.0', 'https://api-test.unleashedsoftware.com');
-        
+
         $this->assertEquals('https://api-test.unleashedsoftware.com', $client->getBaseUrl());
     }
 
     public function testGetRequest(): void
     {
         $expectedResponse = ['Items' => [['Guid' => 'test-guid']]];
-        
+
         $this->mockHttpClient
             ->expects($this->once())
             ->method('request')
@@ -70,7 +73,7 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(200, [], json_encode($expectedResponse)));
 
         $result = $this->client->get('/Products');
-        
+
         $this->assertEquals($expectedResponse, $result);
     }
 
@@ -78,7 +81,7 @@ class UnleashedClientTest extends TestCase
     {
         $data = ['ProductCode' => 'TEST-001'];
         $expectedResponse = ['Guid' => 'new-guid'];
-        
+
         $this->mockHttpClient
             ->expects($this->once())
             ->method('request')
@@ -92,7 +95,7 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(200, [], json_encode($expectedResponse)));
 
         $result = $this->client->post('/Products', $data);
-        
+
         $this->assertEquals($expectedResponse, $result);
     }
 
@@ -100,7 +103,7 @@ class UnleashedClientTest extends TestCase
     {
         $data = ['ProductCode' => 'UPDATED-001'];
         $expectedResponse = ['Guid' => 'updated-guid'];
-        
+
         $this->mockHttpClient
             ->expects($this->once())
             ->method('request')
@@ -108,7 +111,7 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(200, [], json_encode($expectedResponse)));
 
         $result = $this->client->put('/Products/test-guid', $data);
-        
+
         $this->assertEquals($expectedResponse, $result);
     }
 
@@ -121,14 +124,14 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(204));
 
         $result = $this->client->delete('/Products/test-guid');
-        
+
         $this->assertEquals([], $result);
     }
 
     public function testRequestExceptionWithResponse(): void
     {
         $errorResponse = ['Description' => 'Product not found'];
-        
+
         $this->mockHttpClient
             ->expects($this->once())
             ->method('request')
@@ -142,7 +145,7 @@ class UnleashedClientTest extends TestCase
 
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('Product not found');
-        
+
         $this->client->get('/Products/invalid');
     }
 
@@ -160,15 +163,16 @@ class UnleashedClientTest extends TestCase
 
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('Request failed: Network error');
-        
+
         $this->client->get('/Products');
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testSignatureGeneration(): void
     {
         // Test that signature is generated correctly
         $client = new UnleashedClient('test-id', 'test-key', 'test-client/1.0');
-        
+
         // We can't directly test the signature without exposing the method,
         // but we can test that the client is created successfully
         $this->assertInstanceOf(UnleashedClient::class, $client);
@@ -184,7 +188,7 @@ class UnleashedClientTest extends TestCase
                 'GET',
                 '/Products',
                 $this->callback(function ($options) {
-                    return isset($options['query']) && 
+                    return isset($options['query']) &&
                            $options['query']['productCode'] === 'TEST-001';
                 })
             )
@@ -201,7 +205,7 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(200, [], ''));
 
         $result = $this->client->get('/Products');
-        
+
         $this->assertEquals([], $result);
     }
 
@@ -213,7 +217,7 @@ class UnleashedClientTest extends TestCase
             ->willReturn(new Response(200, [], 'invalid json'));
 
         $result = $this->client->get('/Products');
-        
+
         $this->assertEquals([], $result);
     }
 }
